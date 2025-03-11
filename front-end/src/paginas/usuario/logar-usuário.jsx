@@ -43,17 +43,22 @@ export default function LogarUsuário() {
     if (validarCampos()) {
       try {
         const response = await serviçoLogarUsuário(dados);
-        setUsuárioLogado({
-          ...response.data?.usuárioLogado,
-          cpf: dados.nome_login,
-          cadastrado: true,
-        });
-        navegar("/pagina-inicial");
+        if (response.data?.usuarioLogado) {
+          setUsuárioLogado({
+            ...response.data.usuarioLogado,  
+            cpf: dados.nome_login,
+            cadastrado: true,
+          });
+          navegar("/pagina-inicial");
+        } else {
+          mostrarToast(referênciaToast, "Erro no login.", "error");
+        }
       } catch (error) {
-        mostrarToast(referênciaToast, error.response.data.erro, "error");
+        mostrarToast(referênciaToast, error.response?.data.erro || "Erro desconhecido.", "error");
       }
     }
   }
+  
   function alterarEstado(event) {
     const chave = event.target.name || event.value;
     const valor = event.target.value;
